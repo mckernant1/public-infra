@@ -5,15 +5,22 @@ import {
     Cache,
     ComputeType,
     LinuxBuildImage,
-    LocalCacheMode, PipelineProject,
-    PipelineProjectProps, Project
+    LocalCacheMode,
+    PipelineProject,
+    PipelineProjectProps,
+    Project
 } from "aws-cdk-lib/aws-codebuild";
-import {IManagedPolicy, IRole, ManagedPolicy, PolicyDocument, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 import {
-    CodeBuildAction,
-    CodeStarConnectionsSourceAction,
-    CodeStarConnectionsSourceActionProps
-} from "aws-cdk-lib/aws-codepipeline-actions";
+    Effect,
+    IManagedPolicy,
+    IRole,
+    ManagedPolicy,
+    PolicyDocument,
+    PolicyStatement,
+    Role,
+    ServicePrincipal
+} from "aws-cdk-lib/aws-iam";
+import {CodeBuildAction, CodeStarConnectionsSourceAction} from "aws-cdk-lib/aws-codepipeline-actions";
 import {StageProps} from "aws-cdk-lib/aws-codepipeline/lib/pipeline";
 import {Artifact, Pipeline} from "aws-cdk-lib/aws-codepipeline";
 
@@ -40,13 +47,27 @@ export abstract class PipelineBaseStack extends Stack {
     protected get managedPolicies(): IManagedPolicy[] {
         return [
             ManagedPolicy.fromAwsManagedPolicyName('AWSCodeArtifactReadOnlyAccess'),
-            ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMReadOnlyAccess'),
-            ManagedPolicy.fromAwsManagedPolicyName('AmazonS3FullAccess')
+            ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMReadOnlyAccess')
         ]
     }
 
     protected get inlinePolicies(): { [name: string]: PolicyDocument } {
-        return {};
+        return {
+            "s3-publish": new PolicyDocument(
+                {
+                    statements: [
+                        new PolicyStatement({
+                            effect: Effect.ALLOW,
+                            resources: ['arn:aws:s3:::mvn.mckernant1.com/*'],
+                            actions: [
+                                's3:PutObject',
+                                's3:GetObject'
+                            ]
+                        })
+                    ]
+                }
+            )
+        };
     }
 
     protected get codebuildDefaults(): Partial<PipelineProjectProps> {

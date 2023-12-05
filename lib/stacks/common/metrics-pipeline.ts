@@ -7,7 +7,11 @@ export class MetricsPipeline extends PipelineBaseStack {
     constructor(scope: Construct, id: string) {
         super(scope, id);
 
-        const pipeline = this.defaultPipeline('metrics', './gradlew build test publish');
+        const pipeline = this.defaultPipeline(
+            'metrics',
+            './gradlew build test',
+            './gradlew publish'
+        );
 
     }
 
