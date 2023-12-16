@@ -1,11 +1,12 @@
 import {PipelineBaseStack} from "../pipeline-base-stack";
 import {Construct} from "constructs";
+import {ISharedPipelineResources} from "../shared-pipeline-resources";
 
 
 export class MetricsPipeline extends PipelineBaseStack {
 
-    constructor(scope: Construct, id: string) {
-        super(scope, id);
+    constructor(scope: Construct, id: string, sharedResources: ISharedPipelineResources) {
+        super(scope, id, sharedResources);
 
         const pipeline = this.defaultPipeline(
             'metrics',

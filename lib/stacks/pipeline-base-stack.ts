@@ -21,8 +21,9 @@ import {
     ServicePrincipal
 } from "aws-cdk-lib/aws-iam";
 import {CodeBuildAction, CodeStarConnectionsSourceAction} from "aws-cdk-lib/aws-codepipeline-actions";
-import {StageProps} from "aws-cdk-lib/aws-codepipeline/lib/pipeline";
+import {PipelineProps, StageProps} from "aws-cdk-lib/aws-codepipeline/lib/pipeline";
 import {Artifact, Pipeline} from "aws-cdk-lib/aws-codepipeline";
+import {ISharedPipelineResources} from "./shared-pipeline-resources";
 
 
 export abstract class PipelineBaseStack extends Stack {
@@ -30,12 +31,15 @@ export abstract class PipelineBaseStack extends Stack {
     protected owner: string = 'mckernant1'
     protected codestarConnectionsArn: string = 'arn:aws:codestar-connections:us-west-2:653528873951:connection/2add388e-bb26-48ea-992c-e5cee7ee4526';
     protected codeBuildRole: IRole;
+    protected sharedResources: ISharedPipelineResources
 
     protected constructor(
         scope: Construct,
         id: string,
+        sharedResources: ISharedPipelineResources
         ) {
         super(scope, id);
+        this.sharedResources = sharedResources;
         this.codeBuildRole = new Role(this, `codebuild-role-${this.stackName}`, {
             roleName: `codebuild-role-${this.stackName}`,
             assumedBy: new ServicePrincipal('codebuild.amazonaws.com'),
@@ -78,6 +82,12 @@ export abstract class PipelineBaseStack extends Stack {
                 computeType: ComputeType.SMALL
             },
             cache: Cache.local(LocalCacheMode.SOURCE, LocalCacheMode.CUSTOM)
+        }
+    }
+
+    protected get pipelineDefaults(): Partial<PipelineProps> {
+        return {
+            artifactBucket: this.sharedResources.bucket
         }
     }
 
@@ -133,6 +143,7 @@ export abstract class PipelineBaseStack extends Stack {
         const publishProject = this.defaultProject(...commands);
         const sourceArtifact = Artifact.artifact('SourceArtifact');
         return new Pipeline(this, `${this.stackName}-pipeline`, {
+            ...this.pipelineDefaults,
             stages: [
                 this.defaultSourceStage(repoName, sourceArtifact),
                 this.defaultPublishStage(publishProject, sourceArtifact)
