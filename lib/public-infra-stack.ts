@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import {MetricsPipeline} from "./stacks/common/metrics-pipeline";
 import {SharedPipelineResources} from "./stacks/shared-pipeline-resources";
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import {BillingAlarmStack} from "./stacks/billing-alarm";
 
 export class PublicInfraStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -10,7 +10,9 @@ export class PublicInfraStack extends cdk.Stack {
 
     const sharedResources = new SharedPipelineResources(this, `shared-resources`)
 
-    const metricsPipeline = new MetricsPipeline(this, `metrics-pipeline`, sharedResources)
+    const metricsPipeline = new MetricsPipeline(this, `metrics-pipeline`, sharedResources);
+
+    const billingAlarmEmail = new BillingAlarmStack(this, `billing-alarm`)
 
   }
 }
