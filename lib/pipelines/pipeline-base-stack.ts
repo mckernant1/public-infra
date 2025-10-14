@@ -23,7 +23,7 @@ import {
 import {CodeBuildAction, CodeStarConnectionsSourceAction} from "aws-cdk-lib/aws-codepipeline-actions";
 import {PipelineProps, StageProps} from "aws-cdk-lib/aws-codepipeline/lib/pipeline";
 import {Artifact, Pipeline} from "aws-cdk-lib/aws-codepipeline";
-import {ISharedPipelineResources} from "./shared-pipeline-resources";
+import {ISharedPipelineResources} from "../shared/shared-pipeline-resources";
 
 
 export abstract class PipelineBaseStack extends Stack {

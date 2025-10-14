@@ -1,8 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import {MetricsPipeline} from "./stacks/common/metrics-pipeline";
-import {SharedPipelineResources} from "./stacks/shared-pipeline-resources";
-import {BillingAlarmStack} from "./stacks/billing-alarm";
+import {MetricsPipeline} from "./pipelines/metrics-pipeline";
+import {SharedPipelineResources} from "./shared/shared-pipeline-resources";
+import {BillingAlarmStack} from "./alarms/billing-alarm";
 
 export class PublicInfraStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
