@@ -11,6 +11,7 @@ export class MetricsPipeline extends PipelineBaseStack {
         const pipeline = this.defaultPipeline(
             'metrics',
             './gradlew build test',
+          './gradlew release',
             './gradlew publish'
         );
 
