@@ -174,7 +174,7 @@ export abstract class PipelineBaseStack extends Stack {
           commands: [
             'echo Cloning full Git repository with submodules using CodeStar connection...',
             'rm -rf fullrepo',
-            'git config --global url."https://$GITHUB_TOKEN@github.com/".insteadOf "https://github.com/"',
+            'git config --global url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"',
             `git clone --recurse-submodules https://github.com/${this.owner}/${repoName}.git fullrepo`,
             'cd fullrepo'
           ]
