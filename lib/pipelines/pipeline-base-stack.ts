@@ -170,6 +170,11 @@ export abstract class PipelineBaseStack extends Stack {
     return BuildSpec.fromObject({
       version: "0.2",
       phases: {
+        install: {
+          "runtime-versions": {
+            java: 'corretto21'
+          }
+        },
         pre_build: {
           commands: [
             'echo Cloning full Git repository with submodules using CodeStar connection...',
