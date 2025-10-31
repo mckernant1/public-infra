@@ -10,6 +10,7 @@ export class MetricsPipeline extends PipelineBaseStack {
 
         const pipeline = this.defaultPipeline(
             'metrics',
+            'git fetch --tags',
             './gradlew build test',
           './gradlew release',
             './gradlew publish'
