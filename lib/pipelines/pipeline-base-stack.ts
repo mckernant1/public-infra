@@ -23,7 +23,7 @@ import {
 } from "aws-cdk-lib/aws-iam";
 import {CodeBuildAction, CodeStarConnectionsSourceAction} from "aws-cdk-lib/aws-codepipeline-actions";
 import {PipelineProps, StageProps} from "aws-cdk-lib/aws-codepipeline/lib/pipeline";
-import {Artifact, Pipeline} from "aws-cdk-lib/aws-codepipeline";
+import {Artifact, Pipeline, PipelineNotificationEvents} from "aws-cdk-lib/aws-codepipeline";
 import {ISharedPipelineResources} from "../shared/shared-pipeline-resources";
 
 
@@ -92,8 +92,9 @@ export abstract class PipelineBaseStack extends Stack {
     }
   }
 
-  protected get pipelineDefaults(): Partial<PipelineProps> {
+  protected pipelineDefaults(repoName: string): Partial<PipelineProps> {
     return {
+      pipelineName: `${repoName}-pipeline`,
       artifactBucket: this.sharedResources.bucket
     }
   }
@@ -150,13 +151,29 @@ export abstract class PipelineBaseStack extends Stack {
   ): Pipeline {
     const publishProject = this.defaultProject(repoName, ...commands);
     const sourceArtifact = Artifact.artifact('SourceArtifact');
-    return new Pipeline(this, `${this.stackName}-pipeline`, {
-      ...this.pipelineDefaults,
+    const pipeline = new Pipeline(this, `${this.stackName}-pipeline`, {
+      ...this.pipelineDefaults(repoName),
       stages: [
         this.defaultSourceStage(repoName, sourceArtifact),
         this.defaultPublishStage(publishProject, sourceArtifact)
       ]
     });
+
+    pipeline.notifyOn(
+      'notify-on-state-change',
+      this.sharedResources.discordNotificationTopic,
+      {
+        notificationRuleName: `${repoName}-discord-notification-rule`,
+        events: [
+          PipelineNotificationEvents.PIPELINE_EXECUTION_FAILED,
+          PipelineNotificationEvents.PIPELINE_EXECUTION_CANCELED,
+          PipelineNotificationEvents.PIPELINE_EXECUTION_STARTED,
+          PipelineNotificationEvents.PIPELINE_EXECUTION_SUCCEEDED,
+          PipelineNotificationEvents.PIPELINE_EXECUTION_SUPERSEDED,
+        ]
+      });
+
+    return pipeline;
   }
 
   protected get cachePaths(): string[] {

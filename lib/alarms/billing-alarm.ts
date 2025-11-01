@@ -3,6 +3,7 @@ import {Construct} from "constructs";
 import {Alarm, ComparisonOperator, Metric, TreatMissingData} from "aws-cdk-lib/aws-cloudwatch";
 import {SnsAction} from "aws-cdk-lib/aws-cloudwatch-actions";
 import {Subscription, SubscriptionProtocol, Topic} from "aws-cdk-lib/aws-sns";
+import {LOCAL_ENVIRONMENT} from "../shared/environment";
 
 
 export class BillingAlarmStack extends Stack {
@@ -36,14 +37,10 @@ export class BillingAlarmStack extends Stack {
             displayName: 'billingTopic'
         });
 
-        if (process.env['NOTIFICATION_EMAIL'] == null) {
-            throw Error('NOTIFICATION_EMAIL env variable not set')
-        }
-
         const emailSubscription = new Subscription(this, `email-subscription`, {
             topic: billingTopic,
             protocol: SubscriptionProtocol.EMAIL_JSON,
-            endpoint: process.env['NOTIFICATION_EMAIL']!
+            endpoint: LOCAL_ENVIRONMENT.notificationEmail
         })
 
         alarm.addAlarmAction(new SnsAction(billingTopic));
