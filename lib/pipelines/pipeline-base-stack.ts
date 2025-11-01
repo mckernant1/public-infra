@@ -166,10 +166,7 @@ export abstract class PipelineBaseStack extends Stack {
         notificationRuleName: `${repoName}-discord-notification-rule`,
         events: [
           PipelineNotificationEvents.PIPELINE_EXECUTION_FAILED,
-          PipelineNotificationEvents.PIPELINE_EXECUTION_CANCELED,
-          PipelineNotificationEvents.PIPELINE_EXECUTION_STARTED,
           PipelineNotificationEvents.PIPELINE_EXECUTION_SUCCEEDED,
-          PipelineNotificationEvents.PIPELINE_EXECUTION_SUPERSEDED,
         ]
       });
 
