@@ -10,6 +10,6 @@ updates:
     schedule:
       interval: "weekly"
   - package-ecosystem: pip
-    directory: "lambda/discord-notifications"
+    directory: "/lambda/discord-notifications"
     schedule:
       interval: "weekly"
